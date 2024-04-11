@@ -6,9 +6,14 @@ import Error from "./Error";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
 const initialState = {
-  question: [],
+  questions: [],
   //it can be 'loading,'active,'error'etc
   status: "loading",
+  //To know which numbe of question that is displayed
+  index: 0,
+  //To check the answer from the options
+  answer: null,
+  points: 0,
 };
 
 function reducer(state, action) {
@@ -16,7 +21,7 @@ function reducer(state, action) {
     case "dataRecieved":
       return {
         ...state,
-        question: action.payload,
+        questions: action.payload,
         status: "ready",
       };
     case "dataFailed":
@@ -29,13 +34,27 @@ function reducer(state, action) {
         ...state,
         status: "active",
       };
+    case "newAnswer":
+      //To get the current question of each quiz
+      const question = state.questions.at(state.index);
+      return {
+        ...state,
+        answer: action.payload,
+        points:
+          action.payload === question.correctOption
+            ? state.points + question.points
+            : state.points,
+      };
     default:
       throw new Error("Action Unknown");
   }
 }
 export default function App() {
-  const [{ status, question }, dispatch] = useReducer(reducer, initialState);
-  const numQues = question.length;
+  const [{ status, questions, index, answer }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
+  const numQues = questions.length;
   useEffect(function () {
     fetch("http://localhost:7000/questions")
       .then((res) => res.json())
@@ -53,7 +72,13 @@ export default function App() {
         {status === "ready" && (
           <StartScreen numQues={numQues} dispatch={dispatch} />
         )}
-        {status === "active" && <Question />}
+        {status === "active" && (
+          <Question
+            question={questions[index]}
+            dispatch={dispatch}
+            answer={answer}
+          />
+        )}
       </Main>
     </div>
   );
