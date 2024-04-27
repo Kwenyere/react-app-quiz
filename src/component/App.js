@@ -7,6 +7,7 @@ import StartScreen from "./StartScreen";
 import Question from "./Question";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
+import FinishedScreen from "./FinishedScreen";
 const initialState = {
   questions: [],
   //it can be 'loading,'active,'error'etc
@@ -17,6 +18,8 @@ const initialState = {
   answer: null,
   //To get the points
   points: 0,
+  //to get the current highscore at each end of game
+  highscore: 0,
 };
 
 function reducer(state, action) {
@@ -54,15 +57,20 @@ function reducer(state, action) {
         index: state.index + 1,
         answer: null,
       };
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+        highscore:
+          state.points > state.highscore ? state.points : state.highscore,
+      };
     default:
       throw new Error("Action Unknown");
   }
 }
 export default function App() {
-  const [{ status, questions, index, answer, points }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [{ status, questions, index, answer, points, highscore }, dispatch] =
+    useReducer(reducer, initialState);
   const numQues = questions.length;
   const totalPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
   useEffect(function () {
@@ -96,8 +104,20 @@ export default function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton dispatch={dispatch} answer={answer} />
+            <NextButton
+              dispatch={dispatch}
+              answer={answer}
+              index={index}
+              numQues={numQues}
+            />
           </>
+        )}
+        {status === "finished" && (
+          <FinishedScreen
+            points={points}
+            totalPoints={totalPoints}
+            highscore={highscore}
+          />
         )}
       </Main>
     </div>
