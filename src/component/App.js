@@ -12,7 +12,7 @@ const initialState = {
   questions: [],
   //it can be 'loading,'active,'error'etc
   status: "loading",
-  //To know which numbe of question that is displayed
+  //To know which number of question that is displayed
   index: 0,
   //To check the answer from the options
   answer: null,
@@ -63,6 +63,12 @@ function reducer(state, action) {
         status: "finished",
         highscore:
           state.points > state.highscore ? state.points : state.highscore,
+      };
+    case "restart":
+      return {
+        ...initialState,
+        questions: state.questions,
+        status: "ready",
       };
     default:
       throw new Error("Action Unknown");
@@ -117,6 +123,7 @@ export default function App() {
             points={points}
             totalPoints={totalPoints}
             highscore={highscore}
+            dispatch={dispatch}
           />
         )}
       </Main>
