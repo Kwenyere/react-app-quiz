@@ -10,7 +10,7 @@ import Progress from "./Progress";
 import FinishedScreen from "./FinishedScreen";
 import Footer from "./Footer";
 import Timer from "./Timer";
-const SEC_PER_QUES = 30;
+const SEC_PER_QUES = 60;
 const initialState = {
   questions: [],
   //it can be 'loading,'active,'error'etc
